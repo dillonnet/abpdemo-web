@@ -15,6 +15,15 @@ const system: AppRouteModule = {
   },
   children: [
     {
+      path: 'role',
+      name: 'RoleManagement',
+      meta: {
+        title: t('routes.demo.system.role'),
+        ignoreKeepAlive: true,
+      },
+      component: () => import('/@/views/sys/role/index.vue'),
+    },
+    {
       path: 'dept',
       name: 'DeptManagement',
       meta: {
