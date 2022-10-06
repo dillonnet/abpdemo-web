@@ -41,7 +41,7 @@ export const formSchema: FormSchema[] = [
   },
   {
     label: ' ',
-    field: 'permissons',
+    field: 'permissions',
     slot: 'menu',
     component: 'Input',
   },

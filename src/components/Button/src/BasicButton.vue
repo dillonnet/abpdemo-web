@@ -1,5 +1,5 @@
 <template>
-  <Button v-bind="getBindValue" :class="getButtonClass" @click="onClick">
+  <Button v-bind="getBindValue" :class="getButtonClass" @click="onClick" v-if="isShow">
     <template #default="data">
       <Icon :icon="preIcon" v-if="preIcon" :size="iconSize" />
       <slot v-bind="data || {}"></slot>
@@ -21,9 +21,11 @@
   import Icon from '/@/components/Icon/src/Icon.vue';
   import { buttonProps } from './props';
   import { useAttrs } from '/@/hooks/core/useAttrs';
+  import { usePermission } from '/@/hooks/web/usePermission';
 
   const props = defineProps(buttonProps);
-  // get component class
+  const { hasPermission } = usePermission();
+  const isShow = hasPermission(props.auth);
   const attrs = useAttrs({ excludeDefaultKeys: false });
   const getButtonClass = computed(() => {
     const { color, disabled } = props;

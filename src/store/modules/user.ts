@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import { RoleEnum } from '/@/enums/roleEnum';
 import { PageEnum } from '/@/enums/pageEnum';
-import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY } from '/@/enums/cacheEnum';
+import { ROLES_KEY, PERMISSIONS_KEY, TOKEN_KEY, USER_INFO_KEY } from '/@/enums/cacheEnum';
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
 import { GetUserInfoModel, LoginParams } from '/@/api/sys/model/userModel';
 import { doLogout, getUserInfo, loginApi } from '/@/api/sys/user';
@@ -14,13 +14,13 @@ import { router } from '/@/router';
 import { usePermissionStore } from '/@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
 import { PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
-import { isArray } from '/@/utils/is';
 import { h } from 'vue';
 
 interface UserState {
   userInfo: Nullable<UserInfo>;
   token?: string;
   roleList: RoleEnum[];
+  permissions: string[];
   sessionTimeout?: boolean;
   lastUpdateTime: number;
 }
@@ -34,6 +34,7 @@ export const useUserStore = defineStore({
     token: undefined,
     // roleList
     roleList: [],
+    permissions: [],
     // Whether the login expired
     sessionTimeout: false,
     // Last fetch time
@@ -48,6 +49,11 @@ export const useUserStore = defineStore({
     },
     getRoleList(): RoleEnum[] {
       return this.roleList.length > 0 ? this.roleList : getAuthCache<RoleEnum[]>(ROLES_KEY);
+    },
+    getPermissions(): string[] {
+      return this.permissions.length > 0
+        ? this.permissions
+        : getAuthCache<string[]>(PERMISSIONS_KEY);
     },
     getSessionTimeout(): boolean {
       return !!this.sessionTimeout;
@@ -64,6 +70,10 @@ export const useUserStore = defineStore({
     setRoleList(roleList: RoleEnum[]) {
       this.roleList = roleList;
       setAuthCache(ROLES_KEY, roleList);
+    },
+    setPermissionList(permissionList: string[]) {
+      this.permissions = permissionList;
+      setAuthCache(PERMISSIONS_KEY, permissionList);
     },
     setUserInfo(info: UserInfo | null) {
       this.userInfo = info;
@@ -125,14 +135,9 @@ export const useUserStore = defineStore({
     async getUserInfoAction(): Promise<UserInfo | null> {
       if (!this.getToken) return null;
       const userInfo = await getUserInfo();
-      const { roles = [] } = userInfo;
-      if (isArray(roles)) {
-        const roleList = roles.map((item) => item.value) as RoleEnum[];
-        this.setRoleList(roleList);
-      } else {
-        userInfo.roles = [];
-        this.setRoleList([]);
-      }
+
+      const { permissions = [] } = userInfo;
+      this.setPermissionList(permissions);
       this.setUserInfo(userInfo);
       return userInfo;
     },

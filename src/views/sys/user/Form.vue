@@ -7,18 +7,7 @@
     width="500px"
     @ok="handleSubmit"
   >
-    <BasicForm @register="registerForm">
-      <template #menu="{ model, field }">
-        <BasicTree
-          v-model:value="model[field]"
-          :treeData="treeData"
-          :fieldNames="{ title: 'name', key: 'value' }"
-          checkable
-          toolbar
-          title="权限分配"
-        />
-      </template>
-    </BasicForm>
+    <BasicForm @register="registerForm" />
   </BasicModal>
 </template>
 <script lang="ts" setup>
@@ -26,12 +15,10 @@
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from './data';
   import { BasicModal, useModalInner } from '/@/components/Modal';
-  import { BasicTree, TreeItem } from '/@/components/Tree';
-  import { getPermissions, addRole, updateRole } from '/@/api/system';
+  import { addUser, updateUser } from '/@/api/system';
 
   const emit = defineEmits(['success']);
   const isUpdate = ref(true);
-  const treeData = ref<TreeItem[]>([]);
   let id = null;
 
   const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
@@ -44,10 +31,6 @@
   const [registerDrawer, { setModalProps, closeModal }] = useModalInner(async (data) => {
     resetFields();
     setModalProps({ confirmLoading: false });
-    // 需要在setFieldsValue之前先填充treeData，否则Tree组件可能会报key not exist警告
-    if (unref(treeData).length === 0) {
-      treeData.value = (await getPermissions()) as any as TreeItem[];
-    }
     isUpdate.value = !!data?.isUpdate;
     id = data.record.id;
     if (unref(isUpdate)) {
@@ -57,16 +40,17 @@
     }
   });
 
-  const getTitle = computed(() => (!unref(isUpdate) ? '新增角色' : '编辑角色'));
+  const getTitle = computed(() => (!unref(isUpdate) ? '新增用户' : '编辑用户'));
 
   async function handleSubmit() {
     try {
       const values = await validate();
+      console.log(values);
       setModalProps({ confirmLoading: true });
       if (!isUpdate.value) {
-        await addRole(values);
+        await addUser(values);
       } else {
-        await updateRole(id, values);
+        await updateUser(id, values);
       }
       closeModal();
       emit('success');

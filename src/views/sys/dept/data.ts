@@ -1,6 +1,7 @@
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import { DataStatusEnum, enumToOptions } from '/@/enums/bizNum';
+import { getDeptOptions } from '/@/api/system';
 
 export const columns: BasicColumn[] = [
   {
@@ -62,13 +63,13 @@ export const formSchema: FormSchema[] = [
   {
     field: 'parentId',
     label: '上级部门',
-    component: 'TreeSelect',
+    component: 'ApiTreeSelect',
     componentProps: {
       fieldNames: {
         label: 'name',
         value: 'value',
       },
-      getPopupContainer: () => document.body,
+      api: getDeptOptions,
     },
   },
   {

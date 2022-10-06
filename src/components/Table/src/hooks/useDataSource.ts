@@ -267,6 +267,7 @@ export function useDataSource(
       } else {
         pageParams[pageField] = (opt && opt.page) || current;
         pageParams[sizeField] = pageSize;
+        pageParams['skipCount'] = (pageParams[pageField] - 1) * pageParams[sizeField];
       }
 
       const { sortInfo = {}, filterInfo } = searchState;

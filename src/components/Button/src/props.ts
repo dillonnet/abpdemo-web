@@ -2,6 +2,7 @@ export const buttonProps = {
   color: { type: String, validator: (v) => ['error', 'warning', 'success', ''].includes(v) },
   loading: { type: Boolean },
   disabled: { type: Boolean },
+  auth: { type: String },
   /**
    * Text before icon.
    */

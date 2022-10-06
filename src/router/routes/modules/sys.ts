@@ -7,19 +7,29 @@ const system: AppRouteModule = {
   path: '/system',
   name: 'System',
   component: LAYOUT,
-  redirect: '/system/account',
+  redirect: '/system/user',
   meta: {
     orderNo: 2000,
     icon: 'ion:settings-outline',
     title: t('routes.demo.system.moduleName'),
+    permission: 'System',
   },
   children: [
+    {
+      path: 'user',
+      name: 'UserManagement',
+      meta: {
+        title: '用户管理',
+        permission: 'System.Users',
+      },
+      component: () => import('/@/views/sys/user/index.vue'),
+    },
     {
       path: 'role',
       name: 'RoleManagement',
       meta: {
         title: t('routes.demo.system.role'),
-        ignoreKeepAlive: true,
+        permission: 'System.Roles',
       },
       component: () => import('/@/views/sys/role/index.vue'),
     },
@@ -28,7 +38,7 @@ const system: AppRouteModule = {
       name: 'DeptManagement',
       meta: {
         title: t('routes.demo.system.dept'),
-        ignoreKeepAlive: true,
+        permission: 'System.Departments',
       },
       component: () => import('/@/views/sys/dept/index.vue'),
     },
