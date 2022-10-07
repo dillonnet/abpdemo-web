@@ -1,6 +1,6 @@
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
-import { getRoleOptions } from '/@/api/system';
+import { getRoleOptions, getDeptOptions } from '/@/api/system';
 
 export const columns: BasicColumn[] = [
   {
@@ -14,8 +14,13 @@ export const columns: BasicColumn[] = [
     width: 200,
   },
   {
+    title: '部门',
+    dataIndex: 'departmentName',
+    width: 200,
+  },
+  {
     title: '创建时间',
-    dataIndex: 'createTime',
+    dataIndex: 'creationTime',
     width: 180,
     format: 'moment',
   },
@@ -36,19 +41,52 @@ export const formSchema: FormSchema[] = [
     label: '用户名',
     required: true,
     component: 'Input',
+    rules: [
+      {
+        min: 6,
+        max: 16,
+        message: '请输入6-16位字符串',
+      },
+    ],
   },
   {
     field: 'name',
     label: '姓名',
     required: true,
     component: 'Input',
+    rules: [
+      {
+        max: 16,
+        message: '请输入最多16位字符串',
+      },
+    ],
+  },
+  {
+    field: 'id',
+    label: '',
+    show: false,
+    component: 'Input',
   },
   {
     field: 'password',
     label: '密码',
-    required: true,
+    required: ({ model }) => {
+      return model.id === undefined || model.id === '';
+    },
+    rules: [
+      {
+        min: 6,
+        max: 18,
+        message: '请输入6-18位字符串',
+      },
+    ],
     component: 'InputPassword',
+    show: ({ model }) => {
+      console.log(model);
+      return model.id === undefined || model.id === '';
+    },
   },
+
   {
     field: 'roleIds',
     label: '角色',
@@ -61,6 +99,18 @@ export const formSchema: FormSchema[] = [
       },
       mode: 'multiple',
       api: getRoleOptions,
+    },
+  },
+  {
+    field: 'departmentId',
+    label: '部门',
+    component: 'ApiTreeSelect',
+    componentProps: {
+      fieldNames: {
+        label: 'name',
+        value: 'value',
+      },
+      api: getDeptOptions,
     },
   },
 ];

@@ -32,8 +32,8 @@
     resetFields();
     setModalProps({ confirmLoading: false });
     isUpdate.value = !!data?.isUpdate;
-    id = data.record.id;
     if (unref(isUpdate)) {
+      id = data.record.id;
       setFieldsValue({
         ...data.record,
       });
@@ -45,7 +45,6 @@
   async function handleSubmit() {
     try {
       const values = await validate();
-      console.log(values);
       setModalProps({ confirmLoading: true });
       if (!isUpdate.value) {
         await addUser(values);

@@ -49,8 +49,8 @@
       treeData.value = (await getPermissions()) as any as TreeItem[];
     }
     isUpdate.value = !!data?.isUpdate;
-    id = data.record.id;
     if (unref(isUpdate)) {
+      id = data.record.id;
       setFieldsValue({
         ...data.record,
       });

@@ -3,6 +3,7 @@
 
 import type { AxiosResponse } from 'axios';
 import { clone } from 'lodash-es';
+import type { RequestOptions, Result } from '/#/axios';
 import type { AxiosTransform, CreateAxiosOptions } from './axiosTransform';
 import { VAxios } from './Axios';
 import { checkStatus } from './checkStatus';
@@ -28,7 +29,7 @@ const transform: AxiosTransform = {
   /**
    * @description: 处理响应数据。如果数据不是预期格式，可直接抛出错误
    */
-  transformResponseHook: (res, options) => {
+  transformResponseHook: (res: AxiosResponse<Result>, options: RequestOptions) => {
     const { t } = useI18n();
     const { isTransformResponse, isReturnNativeResponse } = options;
     // 是否返回原生响应头 比如：需要获取响应头时使用该属性
@@ -56,11 +57,8 @@ const transform: AxiosTransform = {
       // return '[HTTP] Request has no return value';
       throw new Error(t('sys.api.apiRequestFailed'));
     }
-    //  这里 code，result，message为 后台统一的字段，需要在 types.ts内修改为项目自己的接口返回格式
 
-    // 这里逻辑可以根据项目进行修改
-    const hasSuccess = data && !Reflect.has(data, 'error');
-    if (hasSuccess) {
+    if (!data.error) {
       if (
         options.errorMessageMode === 'message' &&
         res.config.method?.toUpperCase() !== RequestEnum.GET
@@ -70,7 +68,7 @@ const transform: AxiosTransform = {
       return data;
     }
 
-    const { code, message } = data.error;
+    const { details, message } = data.error;
 
     if (options.errorMessageMode === 'modal') {
       createErrorModal({ title: t('sys.api.errorTip'), content: message });
@@ -165,7 +163,7 @@ const transform: AxiosTransform = {
     errorLogStore.addAjaxErrorInfo(error);
     const { response, code, message, config } = error || {};
     const errorMessageMode = config?.requestOptions?.errorMessageMode || 'none';
-    const msg: string = response?.data?.error?.message ?? '';
+    const msg: string = response?.data?.error?.details ?? '';
     const err: string = error?.toString?.() ?? '';
     let errMessage = '';
 
@@ -191,13 +189,6 @@ const transform: AxiosTransform = {
 
     checkStatus(error?.response?.status, msg, errorMessageMode);
 
-    // 添加自动重试机制 保险起见 只针对GET请求
-    const retryRequest = new AxiosRetry();
-    const { isOpenRetry } = config.requestOptions.retryRequest;
-    config.method?.toUpperCase() === RequestEnum.GET &&
-      isOpenRetry &&
-      // @ts-ignore
-      retryRequest.retry(axiosInstance, error);
     return Promise.reject(error);
   },
 };

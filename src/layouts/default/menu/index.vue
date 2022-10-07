@@ -4,7 +4,6 @@
   import { computed, defineComponent, unref, toRef } from 'vue';
   import { BasicMenu } from '/@/components/Menu';
   import { SimpleMenu } from '/@/components/SimpleMenu';
-  import { AppLogo } from '/@/components/Application';
 
   import { MenuModeEnum, MenuSplitTyeEnum } from '/@/enums/menuEnum';
 
@@ -18,7 +17,6 @@
   import { isUrl } from '/@/utils/is';
   import { useRootSetting } from '/@/hooks/setting/useRootSetting';
   import { useAppInject } from '/@/hooks/web/useAppInject';
-  import { useDesign } from '/@/hooks/web/useDesign';
 
   export default defineComponent({
     name: 'LayoutMenu',
@@ -53,8 +51,6 @@
       } = useMenuSetting();
       const { getShowLogo } = useRootSetting();
 
-      const { prefixCls } = useDesign('layout-menu');
-
       const { menusRef } = useSplitMenu(toRef(props, 'splitType'));
 
       const { getIsMobile } = useAppInject();
@@ -80,16 +76,6 @@
         return {
           height: `calc(100% - ${unref(getIsShowLogo) ? '48px' : '0px'})`,
         };
-      });
-
-      const getLogoClass = computed(() => {
-        return [
-          `${prefixCls}-logo`,
-          unref(getComputedMenuTheme),
-          {
-            [`${prefixCls}--mobile`]: unref(getIsMobile),
-          },
-        ];
       });
 
       const getCommonProps = computed(() => {

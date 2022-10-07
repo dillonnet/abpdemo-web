@@ -32,11 +32,22 @@ export interface RetryRequest {
   count: number;
   waitTime: number;
 }
-export interface Result<T = any> {
+
+export interface Result {
+  error: Error;
+}
+
+export interface Error<T = any> {
   code: number;
-  type: 'success' | 'error' | 'warning';
+  data: T;
+  details: string;
   message: string;
-  result: T;
+  validationErrors: ValidationError[];
+}
+
+export interface ValidationError {
+  message: string;
+  members: string[];
 }
 
 // multipart/form-data: upload file

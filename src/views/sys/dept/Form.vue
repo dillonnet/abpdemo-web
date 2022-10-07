@@ -8,13 +8,13 @@
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from './data';
-  import { addDept, updateDept } from '/@/api/system';
+  import { addDept, updateDept, getDeptOptions } from '/@/api/system';
 
   const emit = defineEmits(['success']);
   const isUpdate = ref(true);
   let id = null;
 
-  const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
+  const [registerForm, { resetFields, setFieldsValue, validate, updateSchema }] = useForm({
     labelWidth: 100,
     baseColProps: { span: 24 },
     schemas: formSchema,
@@ -25,8 +25,8 @@
     resetFields();
     setModalProps({ confirmLoading: false });
     isUpdate.value = !!data?.isUpdate;
-    id = data.record.id;
     if (unref(isUpdate)) {
+      id = data.record.id;
       setFieldsValue({
         ...data.record,
       });
@@ -46,6 +46,11 @@
       }
 
       closeModal();
+      const treeData = await getDeptOptions();
+      updateSchema({
+        field: 'parentId',
+        componentProps: { treeData },
+      });
       emit('success');
     } finally {
       setModalProps({ confirmLoading: false });

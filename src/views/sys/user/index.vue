@@ -28,7 +28,7 @@
         </template>
       </template>
     </BasicTable>
-    <Form @register="registerDrawer" @success="handleSuccess" />
+    <Form @register="registerForm" @success="handleSuccess" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -39,7 +39,7 @@
   import Form from './Form.vue';
   import { columns, searchFormSchema } from './data';
 
-  const [registerDrawer, { openModal }] = useModal();
+  const [registerForm, { openModal }] = useModal();
   const [registerTable, { reload }] = useTable({
     title: '用户列表',
     api: getUserList,
